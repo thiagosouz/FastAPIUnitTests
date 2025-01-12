@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "fastapi": "^0.0.8",
+    "requests": "^0.3.0"
+  }
+}
