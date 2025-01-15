@@ -38,6 +38,25 @@ def test_deve_listar_contas_a_pagar_e_receber():
         {'id': 2, 'descricao': 'Salário', 'valor': '5000.0000000000', 'tipo': 'RECEBER'}
     ]
     
+def test_deve_buscar_conta_a_pagar_e_receber_por_id():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    response = client.post("/contas-a-pagar-e-receber", json={
+        "descricao": "Teste de buscar conta",
+        "valor": 1500,
+        "tipo": "PAGAR"
+    })
+    
+    id_conta_a_pagar_e_receber = response.json()['id']
+    
+    response_get = client.get(f"/contas-a-pagar-e-receber/{id_conta_a_pagar_e_receber}")
+    
+    assert response_get.status_code == 200
+    assert float (response_get.json()['valor']) == 1500.0
+    assert response_get.json()['tipo'] == 'PAGAR'
+    assert response_get.json()['descricao'] == 'Teste de buscar conta'    
+    
 def test_deve_criar_contas_a_pagar_e_receber():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -56,6 +75,41 @@ def test_deve_criar_contas_a_pagar_e_receber():
     response_data = response.json()
     response_data["valor"] = float(response_data["valor"])
     assert response_data == nova_conta_copy
+    
+def test_deve_atualizar_conta_a_pagar_e_receber():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    response = client.post("/contas-a-pagar-e-receber", json={
+        "descricao": "Teste de atualização de conta",
+        "valor": 100,
+        "tipo": "PAGAR"
+    })
+    
+    id_conta_a_pagar_e_receber = response.json()['id']
+    
+    response_put = client.put(f"/contas-a-pagar-e-receber/{id_conta_a_pagar_e_receber}", json={
+        "descricao": "Teste de atualização de conta",
+        "valor": 150,
+        "tipo": "PAGAR"
+    })
+    assert response_put.status_code == 200
+    assert float(response_put.json()['valor']) == 150.0
+    
+def test_deve_deletar_conta_a_pagar_e_receber():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    response = client.post("/contas-a-pagar-e-receber", json={
+        "descricao": "Teste de deletar de conta",
+        "valor": 100,
+        "tipo": "PAGAR"
+    })
+    
+    id_conta_a_pagar_e_receber = response.json()['id']
+    
+    response_delete = client.delete(f"/contas-a-pagar-e-receber/{id_conta_a_pagar_e_receber}")
+    assert response_delete.status_code == 204
     
 def test_deve_retornar_erro_excecao_caracteres_descricao():
     response = client.post("/contas-a-pagar-e-receber", json={

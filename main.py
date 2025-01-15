@@ -6,7 +6,7 @@ app =  FastAPI()
 
 @app.get("/")
 def oi_programador():
-    return "Olá QA programador! Vamos treinar um projeto construído do 0 com testes unitários!"
+    return "Olá QA programador! Vamos treinar um projeto construído do 0 com testes unitários! TDD na prática."
 
 app.include_router(contas_a_pagar_e_receber_router.router)
 
