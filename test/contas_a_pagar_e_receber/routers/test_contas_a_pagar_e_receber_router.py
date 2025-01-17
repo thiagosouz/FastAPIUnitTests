@@ -55,7 +55,15 @@ def test_deve_buscar_conta_a_pagar_e_receber_por_id():
     assert response_get.status_code == 200
     assert float (response_get.json()['valor']) == 1500.0
     assert response_get.json()['tipo'] == 'PAGAR'
-    assert response_get.json()['descricao'] == 'Teste de buscar conta'    
+    assert response_get.json()['descricao'] == 'Teste de buscar conta'   
+    
+def test_deve_retornar_nao_encontrado_para_id_inexistente():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+        
+    response_get = client.get(f"/contas-a-pagar-e-receber/1000")
+    
+    assert response_get.status_code == 404
     
 def test_deve_criar_contas_a_pagar_e_receber():
     Base.metadata.drop_all(bind=engine)
@@ -96,6 +104,17 @@ def test_deve_atualizar_conta_a_pagar_e_receber():
     assert response_put.status_code == 200
     assert float(response_put.json()['valor']) == 150.0
     
+def test_deve_retornar_nao_encontrado_para_id_inexistente_na_atualizacao():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    
+    response_put = client.put(f"/contas-a-pagar-e-receber/2000", json={
+        "descricao": "Teste de atualização de conta",
+        "valor": 150,
+        "tipo": "PAGAR"
+    })
+    assert response_put.status_code == 404    
+    
 def test_deve_deletar_conta_a_pagar_e_receber():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -110,6 +129,14 @@ def test_deve_deletar_conta_a_pagar_e_receber():
     
     response_delete = client.delete(f"/contas-a-pagar-e-receber/{id_conta_a_pagar_e_receber}")
     assert response_delete.status_code == 204
+    
+def test_deve_retornar_nao_encontrado_para_id_inexistente_ao_deletar():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    
+    response_delete = client.delete(f"/contas-a-pagar-e-receber/2000")
+    
+    assert response_delete.status_code == 404
     
 def test_deve_retornar_erro_excecao_caracteres_descricao():
     response = client.post("/contas-a-pagar-e-receber", json={
